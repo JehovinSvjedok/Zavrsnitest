@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sensor Data Display</title>
+    <style>
+        /* ... your CSS ... */
+    </style>
+</head>
+<body>
+    <h1>Sensor Reading</h1>
+    <div id="image-container">
+        <img id="sensor-image" src="images/default.png" alt="Sensor Image">
+    </div>
+    <div id="sensor-value"></div>
+
+    <script>
+        const sensorImage = document.getElementById('sensor-image');
+        const sensorValueDisplay = document.getElementById('sensor-value');
+        const defaultImage = 'images/default.png';
+
+        function updateImage() {
+            fetch('/api/latest_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sensor_value !== undefined) {
+                        sensorValueDisplay.textContent = `Current Value: ${data.sensor_value.toFixed(2)}`;
+                        const roundedValue = Math.round(data.sensor_value);
+                        const imageName = `img/Slike/${roundedValue}.png`;
+                        // Check if the image exists (optional, but good practice)
+                        fetch(imageName, { method: 'HEAD' })
+                            .then(response => {
+                                if (response.ok) {
+                                    sensorImage.src = imageName;
+                                } else {
+                                    sensorImage.src = defaultImage;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error checking image:', error);
+                                sensorImage.src = defaultImage;
+                            });
+                    } else if (data.error) {
+                        sensorValueDisplay.textContent = 'Error: ' + data.error;
+                        sensorImage.src = defaultImage;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    sensorValueDisplay.textContent = 'Error fetching data.';
+                    sensorImage.src = defaultImage;
+                });
+        }
+
+        setInterval(updateImage, 3000);
+        updateImage();
+    </script>
+</body>
+</html>

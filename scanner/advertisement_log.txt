@@ -1,0 +1,2 @@
+Timestamp, MAC Address, RSSI, Device ID, Sensor Value
+2025-05-15T12:56:15.017473,d8:3a:dd:37:64:e3,-66,12345,25.5000
